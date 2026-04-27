@@ -77,25 +77,30 @@ function LoginPage({
             </div>
           </div>
 
-          {/* ── Right: Brand panel ── */}
-          <div className="relative flex items-end overflow-hidden bg-gradient-to-br from-[#1b4332] via-[#2d6a4f] to-[#52796f] p-8">
+          {/* ── Right: Image panel ── */}
+          <div className="relative flex min-h-[480px] items-center justify-center overflow-hidden p-8">
 
-            {/* Decorative circles */}
-            <div className="pointer-events-none absolute -right-14 -top-20 h-72 w-72 rounded-full bg-white/5" />
-            <div className="pointer-events-none absolute -left-12 top-14 h-44 w-44 rounded-full bg-white/5" />
-            <div className="pointer-events-none absolute bottom-20 right-5 h-28 w-28 rounded-full bg-white/5" />
+            {/* Full-bleed background image */}
+            <img
+              src="/image.png"
+              alt="Sustainable product display"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+
+            {/* Dark gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/10" />
 
             {/* Leaf icon top-right */}
-            <div className="absolute right-9 top-9 flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/10">
-              <IconLeaf size={20} />
+            <div className="absolute right-9 top-9 z-10 flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/15 backdrop-blur-sm">
+              <IconLeaf size={20} className="text-white" />
             </div>
 
-            {/* Back button */}
+            {/* Back button top-left */}
             <button
               type="button"
               onClick={onBackHome}
               aria-label="Go back home"
-              className="absolute left-8 top-8 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
+              className="absolute left-8 top-8 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/25 hover:text-white"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -113,34 +118,23 @@ function LoginPage({
               </svg>
             </button>
 
-            <div className="relative z-10 flex w-full justify-center pt-8">
-              <div className="relative w-full max-w-[370px]">
-                
-                  <img
-                    src="/image.png"
-                    alt="Sustainable product display"
-                    className="h-auto w-full rounded-[10px] object-contain"
-                  />
-                
+            {/* Content card — centred */}
+            <div className="relative z-10 w-full max-w-[300px] rounded-[14px] border border-white/20 bg-white/10 p-5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur-md">
+              <div className="mb-3 h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 
-                <div className="absolute top-1/2 left-1/2 w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-[14px] border border-white/20 bg-white/8 p-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur-sm">
-                  <div className="mb-3 h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              <p className="font-['DM_Serif_Display',serif] text-[17px] font-normal leading-[1.25] text-white">
+                Sustainability is the new gold standard for commerce
+              </p>
+              <p className="mt-1.5 text-[11px] leading-relaxed text-white/70">
+                Upload proof documents and earn a dynamic trust badge. Verified merchants
+                see up to 40% higher conversion from eco-conscious shoppers.
+              </p>
 
-                  <p className="font-['DM_Serif_Display',serif] text-[15px] font-normal leading-[1.25] text-white">
-                    Sustainability is the new gold standard for commerce
-                  </p>
-                  <p className="mt-1.5 text-[10px] leading-relaxed text-white/65">
-                    Upload proof documents and earn a dynamic trust badge. Verified merchants
-                    see up to 40% higher conversion from eco-conscious shoppers.
-                  </p>
-
-                  <div className="mt-3 flex items-center gap-1.5">
-                    <span className="h-1.5 w-5 rounded-full bg-white" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
-                    <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
-                  </div>
-                </div>
+              <div className="mt-3 flex items-center gap-1.5">
+                <span className="h-1.5 w-5 rounded-full bg-white" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
+                <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
               </div>
             </div>
           </div>
