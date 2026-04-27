@@ -408,6 +408,7 @@ function App() {
             actionLabel="Continue to Dashboard"
             copied={copied}
             copyEmbedCode={copyEmbedCode}
+            displayMode="badge-only"
             hasBadge={true}
             merchantName={form.storeName}
             report={report}

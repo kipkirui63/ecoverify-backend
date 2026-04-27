@@ -17,6 +17,7 @@ function ConfirmationPage({
   actionLabel,
   copied,
   copyEmbedCode,
+  displayMode = 'confirmation',
   hasBadge,
   merchantName,
   report,
@@ -25,6 +26,7 @@ function ConfirmationPage({
   actionLabel: string
   copied: boolean
   copyEmbedCode: () => Promise<void>
+  displayMode?: 'confirmation' | 'badge-only'
   hasBadge: boolean
   merchantName: string
   report: VerificationReport
@@ -36,6 +38,7 @@ function ConfirmationPage({
       : report.badgeTier === 'Silver'
         ? 'border-[#9ca3af] bg-[#f8fafc] text-[#475569]'
         : 'border-[#c97b30] bg-[#fff4e8] text-[#9c4f19]'
+  const isBadgeOnly = displayMode === 'badge-only'
 
   if (!hasBadge) {
     return (
@@ -96,22 +99,24 @@ function ConfirmationPage({
     <section className="flex min-h-screen w-full items-start justify-center bg-[#f8f9fa] px-4 py-8 sm:px-6 md:px-10">
       <div className="w-full max-w-3xl">
         <article className="rounded-2xl border border-[#d8e2dc] bg-white p-6 shadow-sm sm:p-8">
-          <div className="flex flex-col items-center text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1b4332] text-white">
-              <IconCheckCircle size={32} />
+          {!isBadgeOnly && (
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1b4332] text-white">
+                <IconCheckCircle size={32} />
+              </div>
+              <h1 className="mt-5 text-2xl font-bold text-[#1b4332] sm:text-3xl">
+                 Verification Submitted Successfully!
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#52796f] sm:text-base">
+                Your proof has been received for {merchantName}. Your sustainability claims have been audited and approved.
+              </p>
             </div>
-            <h1 className="mt-5 text-2xl font-bold text-[#1b4332] sm:text-3xl">
-               Verification Submitted Successfully!
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-[#52796f] sm:text-base">
-              Your proof has been received for {merchantName}. Your sustainability claims have been audited and approved.
-            </p>
-          </div>
+          )}
 
           <div className="mt-8 space-y-4">
             <section className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
               <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#52796f]">
-                Your Trust Badge
+                {isBadgeOnly ? 'Issued Badge' : 'Your Trust Badge'}
               </p>
               <div className="mt-5 flex flex-col items-center justify-center rounded-xl bg-white p-6 shadow-sm">
                 <div className={`rounded-full border px-4 py-1 text-xs font-semibold ${badgeTone}`}>
@@ -128,43 +133,43 @@ function ConfirmationPage({
               </div>
             </section>
 
-            
-
-            <section className="rounded-xl border border-[#d8e2dc] bg-white p-5 shadow-sm">
-              <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold text-[#1b4332]">Badge embed code</p>
-                  <p className="mt-1 text-xs text-[#52796f]">
-                    Copy this snippet into Shopify or WooCommerce.
-                  </p>
+            {!isBadgeOnly && (
+              <section className="rounded-xl border border-[#d8e2dc] bg-white p-5 shadow-sm">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1b4332]">Badge embed code</p>
+                    <p className="mt-1 text-xs text-[#52796f]">
+                      Copy this snippet into Shopify or WooCommerce.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyEmbedCode}
+                    className="inline-flex items-center gap-1.5 rounded-md border border-[#d8e2dc] bg-white px-3 py-1.5 text-xs font-medium text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
+                  >
+                    <IconCopy />
+                    <span>{copied ? 'Copied!' : 'Copy'}</span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={copyEmbedCode}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-[#d8e2dc] bg-white px-3 py-1.5 text-xs font-medium text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
-                >
-                  <IconCopy />
-                  <span>{copied ? 'Copied!' : 'Copy'}</span>
-                </button>
-              </div>
-              <pre className="overflow-x-auto rounded-lg bg-[#1b4332] p-4">
-                <code className="whitespace-pre text-xs leading-relaxed text-[#a7c4b5]">{`<div class="eco-verify-badge" data-store="${merchantName.toLowerCase().replace(/\s+/g, '-')}" data-tier="${report.badgeTier.toLowerCase()}">
+                <pre className="overflow-x-auto rounded-lg bg-[#1b4332] p-4">
+                  <code className="whitespace-pre text-xs leading-relaxed text-[#a7c4b5]">{`<div class="eco-verify-badge" data-store="${merchantName.toLowerCase().replace(/\s+/g, '-')}" data-tier="${report.badgeTier.toLowerCase()}">
   <img src="https://eco-verify.com/badges/${report.badgeTier.toLowerCase()}.svg" alt="Eco-Verified: ${report.badgeTier}">
 </div>
 <script src="https://eco-verify.com/widget.js"></script>`}</code>
-              </pre>
-              <div className="mt-4 rounded-xl bg-[#f5f8f6] p-3">
-                <div className="flex flex-col gap-3">
-                  <button
-                    type="button"
-                    onClick={onGoDashboard}
-                    className="flex-1 rounded-lg bg-[#1b4332] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#163829]"
-                  >
-                    {actionLabel}
-                  </button>
+                </pre>
+                <div className="mt-4 rounded-xl bg-[#f5f8f6] p-3">
+                  <div className="flex flex-col gap-3">
+                    <button
+                      type="button"
+                      onClick={onGoDashboard}
+                      className="flex-1 rounded-lg bg-[#1b4332] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#163829]"
+                    >
+                      {actionLabel}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
           </div>
         </article>
       </div>
