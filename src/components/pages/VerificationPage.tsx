@@ -45,7 +45,6 @@ function VerificationPage({
   fileInputRef: RefObject<HTMLInputElement | null>
   submitVerification: (event: React.FormEvent<HTMLFormElement>) => void
 }) {
-  const verificationHeroImage = '/verification-proof-scene.svg'
   const [step, setStep] = useState(1)
   const [isAnalysing, setIsAnalysing] = useState(false)
   const heroCopyByStep = {
@@ -66,6 +65,27 @@ function VerificationPage({
     },
   } as const
   const activeHeroCopy = heroCopyByStep[step as 1 | 2 | 3]
+  const stepIllustration = (
+    <aside className="relative min-h-[320px] overflow-hidden bg-[#163829]">
+      <img
+        src="/image.png"
+        alt="Verification illustration"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#10271d]/85 via-[#163829]/30 to-transparent" />
+      <div className="relative flex h-full flex-col justify-end p-6 text-white sm:p-8">
+        <div className="max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+          <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#d6ebdf]">
+            Verification workflow
+          </p>
+          <h2 className="mt-3 text-2xl font-bold leading-tight">{activeHeroCopy.title}</h2>
+          <p className="mt-3 text-sm leading-6 text-[#d6ebdf]">
+            {activeHeroCopy.description}
+          </p>
+        </div>
+      </div>
+    </aside>
+  )
 
   useEffect(() => {
     if (step !== 2 || form.files.length === 0 || !isAnalysing) {
@@ -120,126 +140,128 @@ function VerificationPage({
 
   return (
     <section className="flex min-h-screen w-full items-start justify-center bg-[#f8f9fa] px-4 py-8 sm:px-6 md:px-10">
-      <div className="w-full max-w-[1060px]">
+      <div className="w-full max-w-[1040px]">
         <FlowProgress step={step + 1} totalSteps={4} />
-
-        <div className="mb-6">
-          <div />
+        <div className="mb-8">
+          <div>
+            <p className="text-sm font-medium text-[#52796f]">Merchant Verification &amp; Proof Review</p>
+          </div>
         </div>
 
-        <section className="mb-6 overflow-hidden rounded-2xl border border-[#d8e2dc] bg-white shadow-sm">
-          <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
-            <div className="p-6 sm:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
-                Verification Flow
-              </p>
-              <h2 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
-                {activeHeroCopy.title}
-              </h2>
-              <p className="mt-3 max-w-xl text-sm leading-7 text-[#52796f]">
-                {activeHeroCopy.description}
-              </p>
-            </div>
-            <div className="bg-[#eef4f0] p-4 sm:p-6">
-              <img
-                src={verificationHeroImage}
-                alt="Verification illustration"
-                className="h-full w-full rounded-2xl object-cover"
-              />
-            </div>
-          </div>
-        </section>
-
-        <form
-          onSubmit={handleWizardSubmit}
-          className="rounded-2xl border border-[#d8e2dc] bg-white p-6 shadow-sm sm:p-8"
-        >
+        <div className="grid overflow-hidden rounded-xl border border-[#d8e2dc] bg-white shadow-sm lg:grid-cols-[1.05fr_0.95fr]">
+          <form onSubmit={handleWizardSubmit}>
           {step === 1 && (
-            <section className="space-y-6">
-              <div>
-                <h2 className="text-lg font-bold text-[#1b4332]">Set verification context</h2>
-                <p className="mt-1 text-sm text-[#52796f]">
-                  Define who is being verified and what sustainability claim the next proof upload must support.
-                </p>
-              </div>
+            <section>
+              <div className="space-y-6 p-6 sm:p-8">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
+                    Verification Flow
+                  </p>
+                  <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
+                    {activeHeroCopy.title}
+                  </h1>
+                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
+                    {activeHeroCopy.description}
+                  </p>
+                </div>
 
-              <div className="grid gap-6 md:grid-cols-2">
-                <FormField label="Business Name">
-                  <input
-                    value={form.storeName}
-                    onChange={(event) => onChange('storeName', event.target.value)}
-                    className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
+                <div>
+                  <h2 className="text-lg font-bold text-[#1b4332]">Set verification context</h2>
+                  <p className="mt-1 text-sm text-[#52796f]">
+                    Define who is being verified and what sustainability claim the next proof upload must support.
+                  </p>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <FormField label="Business Name">
+                    <input
+                      value={form.storeName}
+                      onChange={(event) => onChange('storeName', event.target.value)}
+                      className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
+                    />
+                  </FormField>
+
+                  <CustomSelect
+                    label="Country"
+                    value={form.country}
+                    options={countries}
+                    onChange={(value) => onChange('country', value)}
                   />
-                </FormField>
 
-                <CustomSelect
-                  label="Country"
-                  value={form.country}
-                  options={countries}
-                  onChange={(value) => onChange('country', value)}
-                />
+                  <CustomSelect
+                    label="E-commerce Platform"
+                    value={form.platform}
+                    options={platforms}
+                    onChange={(value) => onChange('platform', value)}
+                  />
 
-                <CustomSelect
-                  label="E-commerce Platform"
-                  value={form.platform}
-                  options={platforms}
-                  onChange={(value) => onChange('platform', value)}
-                />
+                  <CustomSelect
+                    label="Sustainability Category"
+                    value={form.sustainabilityCategory}
+                    options={categories}
+                    onChange={(value) => onChange('sustainabilityCategory', value)}
+                    placeholder="Select a category"
+                  />
+                </div>
 
-                <CustomSelect
-                  label="Sustainability Category"
-                  value={form.sustainabilityCategory}
-                  options={categories}
-                  onChange={(value) => onChange('sustainabilityCategory', value)}
-                  placeholder="Select a category"
-                />
-              </div>
-
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={onBack}
-                  aria-label="Go back"
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
-                >
-                  <IconArrowLeft size={20} />
-                </button>
-                <button
-                  type="submit"
-                  aria-label="Continue"
-                  disabled={
-                    !(
+                <div className="flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={onBack}
+                    aria-label="Go back"
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
+                  >
+                    <IconArrowLeft size={20} />
+                  </button>
+                  <button
+                    type="submit"
+                    aria-label="Continue"
+                    disabled={
+                      !(
+                        form.storeName.trim() !== '' &&
+                        form.country.trim() !== '' &&
+                        form.platform.trim() !== '' &&
+                        form.sustainabilityCategory.trim() !== ''
+                      )
+                    }
+                    className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors ${
                       form.storeName.trim() !== '' &&
                       form.country.trim() !== '' &&
                       form.platform.trim() !== '' &&
                       form.sustainabilityCategory.trim() !== ''
-                    )
-                  }
-                  className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors ${
-                    form.storeName.trim() !== '' &&
-                    form.country.trim() !== '' &&
-                    form.platform.trim() !== '' &&
-                    form.sustainabilityCategory.trim() !== ''
-                      ? 'bg-[#1b4332] hover:bg-[#163829]'
-                      : 'cursor-not-allowed bg-[#b7c4b8]'
-                  }`}
-                >
-                  <IconArrowRight size={20} />
-                </button>
+                        ? 'bg-[#1b4332] hover:bg-[#163829]'
+                        : 'cursor-not-allowed bg-[#b7c4b8]'
+                    }`}
+                  >
+                    <IconArrowRight size={20} />
+                  </button>
+                </div>
               </div>
             </section>
           )}
 
           {step === 2 && (
-            <section className="space-y-6">
-              <div>
-                <h2 className="text-lg font-bold text-[#1b4332]">Upload supporting proof</h2>
-                <p className="mt-1 text-sm text-[#52796f]">
-                  Add invoices, certifications, or shipping manifests that support the verification context you set in step 1.
-                </p>
-              </div>
+            <section>
+              <div className="space-y-6 p-6 sm:p-8">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
+                    Verification Flow
+                  </p>
+                  <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
+                    {activeHeroCopy.title}
+                  </h1>
+                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
+                    {activeHeroCopy.description}
+                  </p>
+                </div>
 
-              <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                <div>
+                  <h2 className="text-lg font-bold text-[#1b4332]">Upload supporting proof</h2>
+                  <p className="mt-1 text-sm text-[#52796f]">
+                    Add invoices, certifications, or shipping manifests that support the verification context you set in step 1.
+                  </p>
+                </div>
+
                 <div>
                   <label className="mb-3 block text-sm font-semibold text-[#1b4332]">
                     Proof documents
@@ -319,7 +341,7 @@ function VerificationPage({
                   )}
                 </div>
 
-                <aside className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
+                <section className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
                   <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#52796f]">
                     OCR simulation
                   </p>
@@ -338,7 +360,7 @@ function VerificationPage({
                       </div>
                     </div>
                   ) : (
-                    <div className="mt-5 space-y-3">
+                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
                       <div className="rounded-lg bg-white p-4 shadow-sm">
                         <p className="text-xs uppercase tracking-[0.18em] text-[#52796f]">
                           Supplier name
@@ -363,133 +385,151 @@ function VerificationPage({
                       </div>
                     </div>
                   )}
-                </aside>
-              </div>
+                </section>
 
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => goToStep(1)}
-                  aria-label="Go back"
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
-                >
-                  <IconArrowLeft size={20} />
-                </button>
-                <button
-                  type="submit"
-                  aria-label="Continue"
-                  disabled={form.files.length === 0}
-                  className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors ${
-                    form.files.length > 0
-                      ? 'bg-[#1b4332] hover:bg-[#163829]'
-                      : 'cursor-not-allowed bg-[#b7c4b8]'
-                  }`}
-                >
-                  <IconArrowRight size={20} />
-                </button>
+                <div className="flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => goToStep(1)}
+                    aria-label="Go back"
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
+                  >
+                    <IconArrowLeft size={20} />
+                  </button>
+                  <button
+                    type="submit"
+                    aria-label="Continue"
+                    disabled={form.files.length === 0}
+                    className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors ${
+                      form.files.length > 0
+                        ? 'bg-[#1b4332] hover:bg-[#163829]'
+                        : 'cursor-not-allowed bg-[#b7c4b8]'
+                    }`}
+                  >
+                    <IconArrowRight size={20} />
+                  </button>
+                </div>
               </div>
             </section>
           )}
 
           {step === 3 && (
-            <section className="space-y-6">
-              <div>
-                <h2 className="text-lg font-bold text-[#1b4332]">Review & submit</h2>
-                <p className="mt-1 text-sm text-[#52796f]">
-                  Confirm the details below before sending the proof for verification.
-                </p>
-              </div>
+            <section>
+              <div className="space-y-6 p-6 sm:p-8">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
+                    Verification Flow
+                  </p>
+                  <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
+                    {activeHeroCopy.title}
+                  </h1>
+                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
+                    {activeHeroCopy.description}
+                  </p>
+                </div>
 
-              <div className="grid gap-4 lg:grid-cols-[1fr_0.95fr]">
-                <article className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
-                  <h3 className="text-sm font-semibold text-[#1b4332]">Business summary</h3>
-                  <div className="mt-4 space-y-3 text-sm text-[#315948]">
-                    <div className="flex justify-between gap-4">
-                      <span>Business name</span>
-                      <span className="font-semibold text-[#1b4332]">{form.storeName}</span>
+                <div>
+                  <h2 className="text-lg font-bold text-[#1b4332]">Review & submit</h2>
+                  <p className="mt-1 text-sm text-[#52796f]">
+                    Confirm the details below before sending the proof for verification.
+                  </p>
+                </div>
+
+                <div className="grid gap-4">
+                  <article className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
+                    <h3 className="text-sm font-semibold text-[#1b4332]">Business summary</h3>
+                    <div className="mt-4 space-y-3 text-sm text-[#315948]">
+                      <div className="flex justify-between gap-4">
+                        <span>Business name</span>
+                        <span className="font-semibold text-[#1b4332]">{form.storeName}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Country</span>
+                        <span className="font-semibold text-[#1b4332]">{form.country}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Platform</span>
+                        <span className="font-semibold text-[#1b4332]">{form.platform}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Sustainability category</span>
+                        <span className="font-semibold text-[#1b4332]">
+                          {form.sustainabilityCategory || 'Not selected'}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex justify-between gap-4">
-                      <span>Country</span>
-                      <span className="font-semibold text-[#1b4332]">{form.country}</span>
+                  </article>
+
+                  <article className="rounded-xl border border-[#d8e2dc] bg-white p-5 shadow-sm">
+                    <h3 className="text-sm font-semibold text-[#1b4332]">Uploaded proof</h3>
+                    <div className="mt-4 space-y-3">
+                      {form.files.length > 0 ? (
+                        form.files.map((file) => (
+                          <div
+                            key={file.name}
+                            className="rounded-lg bg-[#f4f7f5] px-4 py-3 text-sm text-[#315948]"
+                          >
+                            {file.name}
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-[#52796f]">No files uploaded yet.</p>
+                      )}
                     </div>
-                    <div className="flex justify-between gap-4">
-                      <span>Platform</span>
-                      <span className="font-semibold text-[#1b4332]">{form.platform}</span>
+
+                    <div className="mt-5 rounded-lg bg-[#f4f7f5] p-4 text-sm text-[#315948]">
+                      <p className="font-semibold text-[#1b4332]">Extracted data</p>
+                      <p className="mt-2">Supplier: {extractedData.supplierName}</p>
+                      <p>Date: {extractedData.documentDate}</p>
+                      <p>Material: {extractedData.materialType}</p>
                     </div>
-                    <div className="flex justify-between gap-4">
-                      <span>Sustainability category</span>
-                      <span className="font-semibold text-[#1b4332]">
-                        {form.sustainabilityCategory || 'Not selected'}
-                      </span>
-                    </div>
-                  </div>
-                </article>
+                  </article>
+                </div>
 
-                <article className="rounded-xl border border-[#d8e2dc] bg-white p-5 shadow-sm">
-                  <h3 className="text-sm font-semibold text-[#1b4332]">Uploaded proof</h3>
-                  <div className="mt-4 space-y-3">
-                    {form.files.length > 0 ? (
-                      form.files.map((file) => (
-                        <div
-                          key={file.name}
-                          className="rounded-lg bg-[#f4f7f5] px-4 py-3 text-sm text-[#315948]"
-                        >
-                          {file.name}
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-[#52796f]">No files uploaded yet.</p>
-                    )}
-                  </div>
+                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#d8e2dc] bg-[#f4f7f5] px-4 py-4 text-sm text-[#315948] transition-colors hover:border-[#b7c4b8] hover:bg-[#edf4ef]">
+                  <input
+                    type="checkbox"
+                    checked={form.consent}
+                    onChange={(event) => onChange('consent', event.target.checked)}
+                    className="peer sr-only"
+                  />
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[#b7c4b8] bg-white text-transparent transition-all peer-checked:border-[#1b4332] peer-checked:bg-[#1b4332] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#cfe0d4] peer-focus-visible:ring-offset-2">
+                    <IconCheckMini />
+                  </span>
+                  <span className="leading-6">
+                    I confirm this information is accurate and ready for verification review.
+                  </span>
+                </label>
 
-                  <div className="mt-5 rounded-lg bg-[#f4f7f5] p-4 text-sm text-[#315948]">
-                    <p className="font-semibold text-[#1b4332]">Extracted data</p>
-                    <p className="mt-2">Supplier: {extractedData.supplierName}</p>
-                    <p>Date: {extractedData.documentDate}</p>
-                    <p>Material: {extractedData.materialType}</p>
-                  </div>
-                </article>
-              </div>
-
-              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#d8e2dc] bg-[#f4f7f5] px-4 py-4 text-sm text-[#315948] transition-colors hover:border-[#b7c4b8] hover:bg-[#edf4ef]">
-                <input
-                  type="checkbox"
-                  checked={form.consent}
-                  onChange={(event) => onChange('consent', event.target.checked)}
-                  className="peer sr-only"
-                />
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[#b7c4b8] bg-white text-transparent transition-all peer-checked:border-[#1b4332] peer-checked:bg-[#1b4332] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#cfe0d4] peer-focus-visible:ring-offset-2">
-                  <IconCheckMini />
-                </span>
-                <span className="leading-6">
-                  I confirm this information is accurate and ready for verification review.
-                </span>
-              </label>
-
-              <div className="flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => goToStep(2)}
-                  aria-label="Go back"
-                  className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
-                >
-                  <IconArrowLeft size={20} />
-                </button>
-                <button
-                  type="submit"
-                  disabled={!form.consent}
-                  className={`rounded-lg px-8 py-3 text-sm font-medium text-white transition-colors ${
-                    form.consent
-                      ? 'bg-[#1b4332] hover:bg-[#163829]'
-                      : 'cursor-not-allowed bg-[#b7c4b8]'
-                  }`}
-                >
-                  Submit for Verification
-                </button>
+                <div className="flex items-center justify-between gap-3">
+                  <button
+                    type="button"
+                    onClick={() => goToStep(2)}
+                    aria-label="Go back"
+                    className="flex h-12 w-12 items-center justify-center rounded-full border border-[#d8e2dc] bg-white text-[#1b4332] transition-colors hover:bg-[#f4f7f5]"
+                  >
+                    <IconArrowLeft size={20} />
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={!form.consent}
+                    className={`rounded-lg px-8 py-3 text-sm font-medium text-white transition-colors ${
+                      form.consent
+                        ? 'bg-[#1b4332] hover:bg-[#163829]'
+                        : 'cursor-not-allowed bg-[#b7c4b8]'
+                    }`}
+                  >
+                    Submit for Verification
+                  </button>
+                </div>
               </div>
             </section>
           )}
-        </form>
+
+          </form>
+
+          {stepIllustration}
+        </div>
       </div>
     </section>
   )
