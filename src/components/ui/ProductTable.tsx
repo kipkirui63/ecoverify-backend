@@ -1,11 +1,6 @@
 import StatusBadge from './StatusBadge'
 
-type ProductRow = {
-  name: string
-  category: string
-  status: 'Verified' | 'In Review'
-  date: string
-}
+import type { ProductRecord } from '../../types/app'
 
 function DashboardRow({
   product,
@@ -15,7 +10,7 @@ function DashboardRow({
 }: {
   product: string
   category: string
-  status: 'Verified' | 'In Review'
+  status: 'Verified' | 'In Review' | 'Flagged'
   date: string
 }) {
   return (
@@ -41,7 +36,7 @@ function DashboardRow({
   )
 }
 
-function ProductTable({ rows }: { rows: ProductRow[] }) {
+function ProductTable({ rows }: { rows: ProductRecord[] }) {
   return (
     <>
       <div className="mb-1 hidden gap-4 border-b border-[#d8e2dc] pb-3 sm:grid sm:grid-cols-4">
