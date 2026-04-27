@@ -1,14 +1,20 @@
-import { products } from '../../data/mockData'
+import type { ProductRecord } from '../../types/app'
 import { IconPlus } from '../ui/Icons'
 import PageHeader from '../ui/PageHeader'
 import ProductTable from '../ui/ProductTable'
 
-function ProductsPage({ onNewVerification }: { onNewVerification: () => void }) {
+function ProductsPage({
+  onNewVerification,
+  rows,
+}: {
+  onNewVerification: () => void
+  rows: ProductRecord[]
+}) {
   return (
     <>
       <PageHeader
         title="Products"
-        description="View all products and their current verification status."
+        description="View all products, trust badge states, and verification outcomes."
         onNewVerification={onNewVerification}
       />
 
@@ -24,7 +30,7 @@ function ProductsPage({ onNewVerification }: { onNewVerification: () => void }) 
             <span>New Verification</span>
           </button>
         </div>
-        <ProductTable rows={products} />
+        <ProductTable rows={rows} />
       </section>
     </>
   )
