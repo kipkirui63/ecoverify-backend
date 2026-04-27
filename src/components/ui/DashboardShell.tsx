@@ -28,7 +28,10 @@ function DashboardShell({
   onNavigate,
   children,
 }: {
-  route: Extract<Route, 'dashboard' | 'verification' | 'badge' | 'settings' | 'products' | 'history'>
+  route: Extract<
+    Route,
+    'dashboard' | 'verification' | 'badge' | 'confirmation' | 'settings' | 'products' | 'history'
+  >
   onNavigate: (route: Route) => void
   children: ReactNode
 }) {

@@ -402,6 +402,19 @@ function App() {
       )}
 
       {route === 'confirmation' && (
+        dashboardUnlocked ? (
+        <DashboardShell route="confirmation" onNavigate={navigate}>
+          <ConfirmationPage
+            actionLabel="Continue to Dashboard"
+            copied={copied}
+            copyEmbedCode={copyEmbedCode}
+            hasBadge={true}
+            merchantName={form.storeName}
+            report={report}
+            onGoDashboard={() => navigate('dashboard')}
+          />
+        </DashboardShell>
+        ) : (
         <ConfirmationPage
           actionLabel="Continue to Dashboard"
           copied={copied}
@@ -411,6 +424,7 @@ function App() {
           report={report}
           onGoDashboard={() => navigate('dashboard')}
         />
+        )
       )}
 
       {route === 'badge' && (
