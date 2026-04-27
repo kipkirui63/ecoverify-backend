@@ -11,10 +11,22 @@ import SettingsPage from './components/pages/SettingsPage'
 import VerificationPage from './components/pages/VerificationPage'
 import {
   categories,
+  defaultReport,
+  historyEvents as initialHistoryEvents,
   initialForm,
   platforms,
+  products as initialProducts,
+  stats as baseStats,
 } from './data/mockData'
-import type { Route, VerificationForm } from './types/app'
+import type {
+  AuditEvent,
+  ProductRecord,
+  Route,
+  UploadedFile,
+  VerificationForm,
+  VerificationReport,
+  VerificationStatus,
+} from './types/app'
 
 function getRouteFromHash(): Route {
   const hash = window.location.hash.replace(/^#\/?/, '')
@@ -40,11 +52,155 @@ function goTo(route: Route) {
   window.location.hash = nextHash
 }
 
+function formatPrettyDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(date)
+}
+
+function formatDateTime(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
+function buildEvidence(files: UploadedFile[]) {
+  if (files.length === 0) return defaultReport.evidence
+
+  return files.map((file, index) => ({
+    id: `${index}-${file.name}`,
+    label: file.type.includes('pdf') ? 'Supplier document' : 'Material photo set',
+    source: file.type.includes('pdf') ? 'OCR invoice parse' : 'Computer vision audit',
+    redactedPreview: `${file.name.replace(/[A-Za-z0-9]/g, '*')} | Parsed fields: supplier, batch, destination`,
+    verified: true,
+  }))
+}
+
+function buildOcrSummary(files: UploadedFile[], category: string) {
+  const base = [
+    `OCR extracted document fields from ${files.length || 1} uploaded proof item(s).`,
+    `Computer vision compared image metadata against the ${category || 'selected'} sustainability claim.`,
+  ]
+
+  if (files.some((file) => file.name.toLowerCase().includes('manifest'))) {
+    base.push('Shipping manifest route and batch reference matched the merchant record.')
+  } else {
+    base.push('Registry cross-check could not confirm every shipment reference automatically.')
+  }
+
+  return base
+}
+
+function inferStatus(files: UploadedFile[], category: string): VerificationStatus {
+  const names = files.map((file) => file.name.toLowerCase())
+  const suspicious = names.some((name) =>
+    ['draft', 'sample', 'blur', 'edited', 'mock'].some((keyword) => name.includes(keyword)),
+  )
+
+  if (suspicious) return 'Flagged'
+  if (files.length < 2 || !category) return 'In Review'
+  return 'Verified'
+}
+
+function buildReport(form: VerificationForm): VerificationReport {
+  const now = new Date()
+  const status = inferStatus(form.files, form.sustainabilityCategory)
+  const category = form.sustainabilityCategory || 'Organic & Natural'
+  const evidence = buildEvidence(form.files)
+  const ocrSummary = buildOcrSummary(form.files, category)
+
+  const badgeTier =
+    status === 'Verified' ? (form.files.length >= 3 ? 'Gold' : 'Silver') : 'Review Hold'
+
+  const anomalies =
+    status === 'Flagged'
+      ? [
+          'One or more uploaded files appear edited or incomplete.',
+          'Supplier reference mismatch requires manual human review before publication.',
+        ]
+      : status === 'In Review'
+        ? [
+            'Additional supporting evidence is required to complete automated verification.',
+          ]
+        : []
+
+  const verifiedAt = formatPrettyDate(now)
+  const nextRefresh = new Date(now)
+  nextRefresh.setDate(nextRefresh.getDate() + (badgeTier === 'Gold' ? 90 : 365))
+
+  const auditTrail: AuditEvent[] = [
+    {
+      id: '1',
+      title: 'Merchant submission received',
+      detail: `${form.storeName} uploaded ${form.files.length || 1} evidence item(s) for ${form.productName}.`,
+      when: formatDateTime(now),
+    },
+    {
+      id: '2',
+      title: 'OCR and computer vision pass completed',
+      detail: 'Structured data fields were extracted and checked against the selected claim category.',
+      when: formatDateTime(new Date(now.getTime() + 60_000)),
+    },
+    {
+      id: '3',
+      title: status === 'Verified' ? 'Dynamic badge issued' : 'Manual review queued',
+      detail:
+        status === 'Verified'
+          ? `${badgeTier} badge generated and storefront widget marked ready for deployment.`
+          : 'Evidence has been held for human validation before the badge can go live.',
+      when: formatDateTime(new Date(now.getTime() + 180_000)),
+    },
+  ]
+
+  return {
+    productName: form.productName,
+    category,
+    status,
+    badgeTier,
+    badgeMessage:
+      status === 'Verified'
+        ? badgeTier === 'Gold'
+          ? 'Proof verified within the last 90 days.'
+          : 'Proof verified within the last year.'
+        : status === 'In Review'
+          ? 'Badge publication paused until more proof is uploaded.'
+          : 'Verification blocked pending manual anomaly review.',
+    freshnessLabel:
+      status === 'Verified'
+        ? badgeTier === 'Gold'
+          ? 'Fresh verification: valid for 90 days'
+          : 'Verified archive state: valid for 1 year'
+        : 'Freshness not published while review is open',
+    verifiedAt,
+    nextRefreshDue: formatPrettyDate(nextRefresh),
+    confidenceScore:
+      status === 'Verified' ? '99.1%' : status === 'In Review' ? '92.4%' : '71.6%',
+    conversionLift: status === 'Verified' ? '+15%' : '+6% projected after approval',
+    integrityRate: status === 'Flagged' ? 'Needs review' : '99%',
+    auditHash: `0xEV-${form.platform.slice(0, 3).toUpperCase()}-${verifiedAt.replace(/[^0-9]/g, '').slice(0, 8)}-${form.productName.slice(0, 4).toUpperCase()}`,
+    widgetStatus: status === 'Verified' ? 'Connected' : status === 'In Review' ? 'Pending' : 'Action Needed',
+    storeSyncStatus: form.platform === 'Custom Storefront' ? 'Pending' : 'Connected',
+    ocrSummary,
+    anomalies,
+    evidence,
+    auditTrail,
+  }
+}
+
 function App() {
   const [route, setRoute] = useState<Route>(() => getRouteFromHash())
   const [form, setForm] = useState<VerificationForm>(initialForm)
   const [copied, setCopied] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [report, setReport] = useState<VerificationReport>(defaultReport)
+  const [productRows, setProductRows] = useState<ProductRecord[]>(initialProducts)
+  const [activity, setActivity] = useState(initialHistoryEvents)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -93,8 +249,11 @@ function App() {
   }
 
   async function copyEmbedCode() {
-    const embedCode = `<div class="eco-verify-badge" data-product-id="hemp-hoodie-123">
-  <img src="https://eco-verify.com/badges/verified.svg" alt="Eco-Verified: 100%">
+    const badgeColor =
+      report.badgeTier === 'Gold' ? 'gold' : report.badgeTier === 'Silver' ? 'silver' : 'review'
+
+    const embedCode = `<div class="eco-verify-badge" data-product-id="${form.productName.toLowerCase().replace(/\s+/g, '-')}">
+  <img src="https://eco-verify.com/badges/${badgeColor}.svg" alt="Eco-Verified: ${report.badgeTier}">
 </div>
 <script src="https://eco-verify.com/widget.js"></script>`
 
@@ -115,8 +274,55 @@ function App() {
 
   function submitVerification(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    const nextReport = buildReport(form)
+    setReport(nextReport)
+
+    setProductRows((current) => [
+      {
+        name: nextReport.productName,
+        category: nextReport.category,
+        status: nextReport.status,
+        date: nextReport.verifiedAt,
+        badgeTier: nextReport.badgeTier,
+      },
+      ...current.filter((item) => item.name !== nextReport.productName),
+    ])
+
+    setActivity((current) => [
+      {
+        title:
+          nextReport.status === 'Verified'
+            ? `${nextReport.productName} ${nextReport.badgeTier} badge issued`
+            : nextReport.status === 'In Review'
+              ? `${nextReport.productName} queued for review`
+              : `${nextReport.productName} flagged for manual audit`,
+        detail:
+          nextReport.status === 'Verified'
+            ? nextReport.badgeMessage
+            : nextReport.anomalies[0] ?? 'Merchant evidence requires additional review.',
+        when: 'Just now',
+      },
+      ...current,
+    ])
+
     navigate('confirmation')
   }
+
+  const dashboardStats = [
+    {
+      ...baseStats[0],
+      value: String(productRows.filter((item) => item.status === 'Verified').length),
+    },
+    {
+      ...baseStats[1],
+      value: String(productRows.filter((item) => item.status === 'In Review').length),
+    },
+    {
+      ...baseStats[2],
+      value: String(productRows.length),
+    },
+  ]
 
   return (
     <main className="min-h-screen bg-[#f8f9fa] text-[#1b4332]">
@@ -167,7 +373,8 @@ function App() {
           copied={copied}
           copyEmbedCode={copyEmbedCode}
           productName={form.productName}
-          category={form.sustainabilityCategory || '100% Organic'}
+          category={report.category}
+          report={report}
           onGoDashboard={() => navigate('dashboard')}
           onVerifyAnother={() => navigate('verification')}
         />
@@ -175,25 +382,34 @@ function App() {
 
       {route === 'dashboard' && (
         <DashboardShell route="dashboard" onNavigate={navigate}>
-          <DashboardPage onNewVerification={() => navigate('verification')} />
+          <DashboardPage
+            onNewVerification={() => navigate('verification')}
+            stats={dashboardStats}
+            rows={productRows}
+            report={report}
+          />
         </DashboardShell>
       )}
 
       {route === 'products' && (
         <DashboardShell route="products" onNavigate={navigate}>
-          <ProductsPage onNewVerification={() => navigate('verification')} />
+          <ProductsPage onNewVerification={() => navigate('verification')} rows={productRows} />
         </DashboardShell>
       )}
 
       {route === 'history' && (
         <DashboardShell route="history" onNavigate={navigate}>
-          <HistoryPage onNewVerification={() => navigate('verification')} />
+          <HistoryPage
+            onNewVerification={() => navigate('verification')}
+            events={activity}
+            report={report}
+          />
         </DashboardShell>
       )}
 
       {route === 'settings' && (
         <DashboardShell route="settings" onNavigate={navigate}>
-          <SettingsPage onNewVerification={() => navigate('verification')} />
+          <SettingsPage onNewVerification={() => navigate('verification')} report={report} />
         </DashboardShell>
       )}
     </main>
