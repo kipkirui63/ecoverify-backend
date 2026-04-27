@@ -114,18 +114,16 @@ function LoginPage({
             </button>
 
             <div className="relative z-10 flex w-full justify-center pt-8">
-              <div className="relative w-full max-w-[430px]">
-                <div className="overflow-hidden rounded-[18px] border border-white/20 bg-white/10 p-3 shadow-[0_18px_45px_rgba(0,0,0,0.16)] backdrop-blur-sm">
-                <img
-                  src="/image.png"
-                  alt="Sustainable product display"
-                  className="h-auto w-full rounded-[10px] object-contain"
-                />
-                </div>
+              <div className="relative w-full max-w-[370px]">
+                
+                  <img
+                    src="/image.png"
+                    alt="Sustainable product display"
+                    className="h-auto w-full rounded-[10px] object-contain"
+                  />
+                
 
-                {/* Content card */}
                 <div className="absolute top-1/2 left-1/2 w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-[14px] border border-white/20 bg-white/8 p-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur-sm">
-                  {/* Spinner */}
                   <div className="mb-3 h-6 w-6 animate-spin rounded-full border-2 border-white/30 border-t-white" />
 
                   <p className="font-['DM_Serif_Display',serif] text-[15px] font-normal leading-[1.25] text-white">
@@ -136,7 +134,6 @@ function LoginPage({
                     see up to 40% higher conversion from eco-conscious shoppers.
                   </p>
 
-                  {/* Step dots */}
                   <div className="mt-3 flex items-center gap-1.5">
                     <span className="h-1.5 w-5 rounded-full bg-white" />
                     <span className="h-1.5 w-1.5 rounded-full bg-white/35" />
