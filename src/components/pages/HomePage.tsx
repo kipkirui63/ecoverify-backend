@@ -1,5 +1,5 @@
 import Metric from '../ui/Metric'
-import { IconPlayCircle, IconShopify } from '../ui/Icons'
+import { IconLeaf, IconPlayCircle, IconShopify } from '../ui/Icons'
 
 function HomePage({
   onLogin,
@@ -9,23 +9,26 @@ function HomePage({
   onOpenDashboard: () => void
 }) {
   return (
-    <section className="flex min-h-[662.4px] w-full items-center justify-center px-6 py-16 sm:px-10 md:px-16 lg:px-[103.2px]">
-      <div className="w-full max-w-[896px]">
+    <section className="flex min-h-screen w-full items-center justify-center px-6 py-16 sm:px-10 md:px-16 lg:px-[103.2px]">
+      <div className="relative w-full max-w-[896px]">
+        <div className="absolute top-0 right-0 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1b4332] text-white shadow-sm">
+          <IconLeaf size={22} />
+        </div>
         <div className="flex flex-col items-center text-center">
           <header className="max-w-[896px]">
-            <h1 className="text-center text-5xl leading-[1.2] font-normal tracking-[0] text-[#1b4332] sm:text-6xl sm:leading-[75px]">
+            <h1 className="text-center text-5xl leading-[1.08] font-normal tracking-[0] text-[#1b4332] sm:text-6xl sm:leading-[75px]">
               Verified Transparency for
               <br />
               Sustainable Brands.
             </h1>
-            <p className="mt-10 text-center text-xl leading-7 font-normal tracking-[0] text-[#52796f]">
-              Upload proof of origin, validate sourcing claims, and generate a live trust badge in minutes.
+            <p className="mt-8 max-w-2xl text-center text-xl leading-8 font-normal tracking-[0] text-[#52796f]">
+              Upload proof of origin and generate your Trust Badge in 5 minutes. Eco-Verify helps SMEs counter greenwashing with visual proof, dynamic badge freshness, and consumer-facing transparency.
             </p>
           </header>
 
           <nav
             aria-label="Primary actions"
-            className="mt-[54px] flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="mt-[44px] flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <button
               type="button"
@@ -33,7 +36,7 @@ function HomePage({
               className="inline-flex min-w-[264.65px] items-center justify-center gap-2 rounded-lg bg-[#1b4332] px-8 py-4 text-base leading-6 font-medium tracking-[0] text-white shadow-[0px_4px_6px_-4px_#0000001a,0px_10px_15px_-3px_#0000001a] transition-colors hover:bg-[#163829]"
             >
               <IconShopify />
-              <span>Connect to Shopify</span>
+              <span>Connect Shopify Store</span>
             </button>
             <button
               type="button"
@@ -47,7 +50,7 @@ function HomePage({
 
           <section
             aria-label="Key metrics"
-            className="mt-[74px] grid w-full max-w-[768px] grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8"
+            className="mt-[64px] grid w-full max-w-[768px] grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8"
           >
             <Metric value="5 min" label="Quick Verification" />
             <Metric value="100%" label="Audit Accuracy" />
