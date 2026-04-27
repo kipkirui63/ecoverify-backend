@@ -1,15 +1,18 @@
 import type { ProductRecord, VerificationForm, VerificationReport } from '../types/app'
 
 export const initialForm: VerificationForm = {
-  storeName: 'Verdant Thread',
+  storeName: '',
+  country: 'Kenya',
   platform: 'Shopify',
-  website: 'verdantthread.co',
-  contactName: 'Amina Otieno',
+  website: '',
+  contactName: '',
   productName: 'Organic Hemp Hoodie',
   sustainabilityCategory: '',
   files: [],
   consent: true,
 }
+
+export const countries = ['Kenya', 'United States', 'United Kingdom', 'Canada', 'Germany']
 
 export const platforms = ['Shopify', 'WooCommerce', 'Magento', 'Custom Storefront']
 
@@ -27,7 +30,7 @@ export const defaultReport: VerificationReport = {
   category: 'Organic & Natural',
   status: 'Verified',
   badgeTier: 'Gold',
-  badgeMessage: 'Proof verified within the last 90 days.',
+  badgeMessage: '100% Organic.',
   freshnessLabel: 'Fresh verification: 14 days ago',
   verifiedAt: 'April 13, 2026',
   nextRefreshDue: 'July 12, 2026',
@@ -94,44 +97,6 @@ export const stats = [
   { label: 'Total Products', value: '15', icon: 'globe' as const },
 ]
 
-export const products: ProductRecord[] = [
-  {
-    name: 'Organic Hemp Hoodie',
-    category: 'Organic & Natural',
-    status: 'Verified',
-    date: 'March 24, 2026',
-    badgeTier: 'Gold',
-  },
-  {
-    name: 'Recycled Cotton T-Shirt',
-    category: 'Recycled Materials',
-    status: 'In Review',
-    date: 'March 25, 2026',
-    badgeTier: 'Review Hold',
-  },
-  {
-    name: 'Bamboo Lounge Set',
-    category: 'Sustainably Sourced',
-    status: 'Verified',
-    date: 'April 2, 2026',
-    badgeTier: 'Silver',
-  },
-]
+export const products: ProductRecord[] = []
 
-export const historyEvents = [
-  {
-    title: 'Organic Hemp Hoodie approved',
-    detail: 'Trust badge issued after invoice and farm certificate review.',
-    when: 'Today',
-  },
-  {
-    title: 'Recycled Cotton T-Shirt submitted',
-    detail: 'Awaiting supporting shipment photos from supplier.',
-    when: 'Yesterday',
-  },
-  {
-    title: 'Store sync completed',
-    detail: 'Shopify storefront connected and badge widget enabled.',
-    when: 'April 23, 2026',
-  },
-]
+export const historyEvents: Array<{ title: string; detail: string; when: string }> = []

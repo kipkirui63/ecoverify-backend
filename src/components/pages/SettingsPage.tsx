@@ -20,7 +20,7 @@ function SettingsPage({
       <section className="grid gap-4 lg:grid-cols-[1fr_0.9fr]">
         <section className="rounded-xl border border-[#d8e2dc] bg-white p-5 shadow-sm sm:p-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <FormField label="Store Name">
+            <FormField label="Business Name">
               <input
                 defaultValue="Verdant Thread"
                 className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
@@ -40,7 +40,13 @@ function SettingsPage({
             </FormField>
             <FormField label="Badge Refresh">
               <input
-                defaultValue={report.badgeTier === 'Gold' ? 'Every 90 days' : 'Every 365 days'}
+                defaultValue={
+                  report.badgeTier === 'Gold'
+                    ? 'Every 90 days'
+                    : report.badgeTier === 'Silver'
+                      ? 'Every 365 days'
+                      : 'Every 30 days'
+                }
                 className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
               />
             </FormField>

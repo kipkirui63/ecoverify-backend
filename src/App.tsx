@@ -8,15 +8,16 @@ import LoginPage from './components/pages/LoginPage'
 import OnboardingPage from './components/pages/OnboardingPage'
 import ProductsPage from './components/pages/ProductsPage'
 import SettingsPage from './components/pages/SettingsPage'
+import VerificationProgressPage from './components/pages/VerificationProgressPage'
 import VerificationPage from './components/pages/VerificationPage'
 import {
+  countries,
   categories,
   defaultReport,
   historyEvents as initialHistoryEvents,
   initialForm,
   platforms,
   products as initialProducts,
-  stats as baseStats,
 } from './data/mockData'
 import type {
   AuditEvent,
@@ -36,6 +37,7 @@ function getRouteFromHash(): Route {
     case 'onboarding':
     case 'verification':
     case 'confirmation':
+    case 'badge':
     case 'dashboard':
     case 'products':
     case 'history':
@@ -116,7 +118,15 @@ function buildReport(form: VerificationForm): VerificationReport {
   const ocrSummary = buildOcrSummary(form.files, category)
 
   const badgeTier =
-    status === 'Verified' ? (form.files.length >= 3 ? 'Gold' : 'Silver') : 'Review Hold'
+    status === 'Verified'
+      ? form.files.length >= 3
+        ? 'Gold'
+        : 'Silver'
+      : status === 'In Review'
+        ? form.files.length > 0
+          ? 'Silver'
+          : 'Bronze'
+        : 'Bronze'
 
   const anomalies =
     status === 'Flagged'
@@ -132,13 +142,13 @@ function buildReport(form: VerificationForm): VerificationReport {
 
   const verifiedAt = formatPrettyDate(now)
   const nextRefresh = new Date(now)
-  nextRefresh.setDate(nextRefresh.getDate() + (badgeTier === 'Gold' ? 90 : 365))
+  nextRefresh.setDate(nextRefresh.getDate() + (badgeTier === 'Gold' ? 90 : badgeTier === 'Silver' ? 365 : 30))
 
   const auditTrail: AuditEvent[] = [
     {
       id: '1',
       title: 'Merchant submission received',
-      detail: `${form.storeName} uploaded ${form.files.length || 1} evidence item(s) for ${form.productName}.`,
+      detail: `${form.storeName} in ${form.country} uploaded ${form.files.length || 1} evidence item(s) for ${form.productName}.`,
       when: formatDateTime(now),
     },
     {
@@ -166,22 +176,27 @@ function buildReport(form: VerificationForm): VerificationReport {
     badgeMessage:
       status === 'Verified'
         ? badgeTier === 'Gold'
-          ? 'Proof verified within the last 90 days.'
-          : 'Proof verified within the last year.'
+          ? '100% Organic.'
+          : 'Eco-Verified.'
         : status === 'In Review'
-          ? 'Badge publication paused until more proof is uploaded.'
+          ? badgeTier === 'Silver'
+            ? 'Evidence received. The badge is being prepared for review.'
+            : 'Proof is incomplete. Upload more evidence to raise the badge tier.'
           : 'Verification blocked pending manual anomaly review.',
     freshnessLabel:
       status === 'Verified'
         ? badgeTier === 'Gold'
           ? 'Fresh verification: valid for 90 days'
           : 'Verified archive state: valid for 1 year'
-        : 'Freshness not published while review is open',
+        : badgeTier === 'Silver'
+          ? 'Review state: publication pending'
+          : 'Freshness not published while review is open',
     verifiedAt,
     nextRefreshDue: formatPrettyDate(nextRefresh),
     confidenceScore:
       status === 'Verified' ? '99.1%' : status === 'In Review' ? '92.4%' : '71.6%',
-    conversionLift: status === 'Verified' ? '+15%' : '+6% projected after approval',
+    conversionLift:
+      status === 'Verified' ? '+15%' : status === 'In Review' ? '+6% projected' : '+2% projected',
     integrityRate: status === 'Flagged' ? 'Needs review' : '99%',
     auditHash: `0xEV-${form.platform.slice(0, 3).toUpperCase()}-${verifiedAt.replace(/[^0-9]/g, '').slice(0, 8)}-${form.productName.slice(0, 4).toUpperCase()}`,
     widgetStatus: status === 'Verified' ? 'Connected' : status === 'In Review' ? 'Pending' : 'Action Needed',
@@ -201,6 +216,7 @@ function App() {
   const [report, setReport] = useState<VerificationReport>(defaultReport)
   const [productRows, setProductRows] = useState<ProductRecord[]>(initialProducts)
   const [activity, setActivity] = useState(initialHistoryEvents)
+  const [dashboardUnlocked, setDashboardUnlocked] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -211,7 +227,17 @@ function App() {
     return () => window.removeEventListener('hashchange', syncRoute)
   }, [])
 
+  useEffect(() => {
+    if (route !== 'badge') return
+
+    const timeout = window.setTimeout(() => navigate('confirmation'), 1800)
+    return () => window.clearTimeout(timeout)
+  }, [route])
+
   function navigate(nextRoute: Route) {
+    if (nextRoute === 'dashboard') {
+      setDashboardUnlocked(true)
+    }
     goTo(nextRoute)
   }
 
@@ -250,7 +276,7 @@ function App() {
 
   async function copyEmbedCode() {
     const badgeColor =
-      report.badgeTier === 'Gold' ? 'gold' : report.badgeTier === 'Silver' ? 'silver' : 'review'
+      report.badgeTier === 'Gold' ? 'gold' : report.badgeTier === 'Silver' ? 'silver' : 'bronze'
 
     const embedCode = `<div class="eco-verify-badge" data-product-id="${form.productName.toLowerCase().replace(/\s+/g, '-')}">
   <img src="https://eco-verify.com/badges/${badgeColor}.svg" alt="Eco-Verified: ${report.badgeTier}">
@@ -306,23 +332,8 @@ function App() {
       ...current,
     ])
 
-    navigate('confirmation')
+    navigate('badge')
   }
-
-  const dashboardStats = [
-    {
-      ...baseStats[0],
-      value: String(productRows.filter((item) => item.status === 'Verified').length),
-    },
-    {
-      ...baseStats[1],
-      value: String(productRows.filter((item) => item.status === 'In Review').length),
-    },
-    {
-      ...baseStats[2],
-      value: String(productRows.length),
-    },
-  ]
 
   return (
     <main className="min-h-screen bg-[#f8f9fa] text-[#1b4332]">
@@ -351,11 +362,32 @@ function App() {
       )}
 
       {route === 'verification' && (
+        dashboardUnlocked ? (
+        <DashboardShell route="verification" onNavigate={navigate}>
+          <VerificationPage
+            form={form}
+            categories={categories}
+            countries={countries}
+            platforms={platforms}
+            onBack={() => navigate('dashboard')}
+            onChange={updateField}
+            addFiles={addFiles}
+            removeFile={removeFile}
+            formatSize={formatSize}
+            isDragging={isDragging}
+            setIsDragging={setIsDragging}
+            handleFileDrop={handleFileDrop}
+            fileInputRef={fileInputRef}
+            submitVerification={submitVerification}
+          />
+        </DashboardShell>
+        ) : (
         <VerificationPage
           form={form}
           categories={categories}
+          countries={countries}
+          platforms={platforms}
           onBack={() => navigate('onboarding')}
-          onViewDashboard={() => navigate('dashboard')}
           onChange={updateField}
           addFiles={addFiles}
           removeFile={removeFile}
@@ -366,27 +398,34 @@ function App() {
           fileInputRef={fileInputRef}
           submitVerification={submitVerification}
         />
+        )
       )}
 
       {route === 'confirmation' && (
         <ConfirmationPage
+          actionLabel="Continue to Dashboard"
           copied={copied}
           copyEmbedCode={copyEmbedCode}
-          productName={form.productName}
-          category={report.category}
+          hasBadge={true}
+          merchantName={form.storeName}
           report={report}
           onGoDashboard={() => navigate('dashboard')}
-          onVerifyAnother={() => navigate('verification')}
         />
+      )}
+
+      {route === 'badge' && (
+        <VerificationProgressPage />
       )}
 
       {route === 'dashboard' && (
         <DashboardShell route="dashboard" onNavigate={navigate}>
           <DashboardPage
-            onNewVerification={() => navigate('verification')}
-            stats={dashboardStats}
-            rows={productRows}
+            merchantName={form.storeName}
             report={report}
+            totalClaimsSubmitted={productRows.length}
+            queue={productRows}
+            activity={activity}
+            onStartVerification={() => navigate('verification')}
           />
         </DashboardShell>
       )}

@@ -4,6 +4,7 @@ export type Route =
   | 'onboarding'
   | 'verification'
   | 'confirmation'
+  | 'badge'
   | 'dashboard'
   | 'products'
   | 'history'
@@ -13,6 +14,7 @@ export type UploadedFile = { name: string; size: number; type: string }
 
 export type VerificationForm = {
   storeName: string
+  country: string
   platform: string
   website: string
   contactName: string
@@ -23,7 +25,7 @@ export type VerificationForm = {
 }
 
 export type VerificationStatus = 'Verified' | 'In Review' | 'Flagged'
-export type BadgeTier = 'Gold' | 'Silver' | 'Review Hold'
+export type BadgeTier = 'Gold' | 'Silver' | 'Bronze'
 export type SyncStatus = 'Connected' | 'Pending' | 'Action Needed'
 
 export type VerificationEvidence = {

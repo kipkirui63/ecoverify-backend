@@ -1,5 +1,4 @@
 import { IconLeaf } from '../ui/Icons'
-import FlowProgress from '../ui/FlowProgress'
 
 function LoginPage({
   onBackHome,
@@ -13,8 +12,6 @@ function LoginPage({
   return (
     <section className="flex min-h-screen items-center justify-center bg-[#f0f4f0] px-4 py-8 sm:px-6 md:px-10">
       <div className="w-full max-w-5xl">
-        <FlowProgress step={1} totalSteps={4} />
-
         <div className="grid overflow-hidden rounded-[24px] border border-[#cdd9d0] shadow-[0_32px_80px_rgba(14,53,40,0.12)] lg:grid-cols-2">
 
           {/* ── Left: Form panel ── */}
