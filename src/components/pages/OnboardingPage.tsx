@@ -118,7 +118,7 @@ function OnboardingPage({
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#10271d]/85 via-[#163829]/30 to-transparent" />
-            <div className="relative flex h-full flex-col justify-end p-6 text-white sm:p-8">
+            <div className="relative flex h-full flex-col items-center justify-end p-6 text-white sm:p-8">
               <div className="max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
                 <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#d6ebdf]">
                   Storefront trust
