@@ -13,12 +13,16 @@ export type Route =
 export type UploadedFile = { name: string; size: number; type: string }
 
 export type VerificationForm = {
-  storeName: string
+  businessName: string
   country: string
   platform: string
   website: string
   contactName: string
+  contactEmail: string
+  contactPhone: string
   productName: string
+  productSku: string
+  productUrl: string
   sustainabilityCategory: string
   files: UploadedFile[]
   consent: boolean

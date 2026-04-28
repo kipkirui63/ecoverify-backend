@@ -1,12 +1,16 @@
 import type { ProductRecord, VerificationForm, VerificationReport } from '../types/app'
 
 export const initialForm: VerificationForm = {
-  storeName: '',
+  businessName: '',
   country: 'Kenya',
   platform: 'Shopify',
   website: '',
   contactName: '',
+  contactEmail: '',
+  contactPhone: '',
   productName: 'Organic Hemp Hoodie',
+  productSku: '',
+  productUrl: '',
   sustainabilityCategory: '',
   files: [],
   consent: true,

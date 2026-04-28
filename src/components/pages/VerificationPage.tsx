@@ -17,8 +17,6 @@ import {
 function VerificationPage({
   form,
   categories,
-  countries,
-  platforms,
   onBack,
   onChange,
   addFiles,
@@ -32,8 +30,6 @@ function VerificationPage({
 }: {
   form: VerificationForm
   categories: string[]
-  countries: string[]
-  platforms: string[]
   onBack: () => void
   onChange: <K extends keyof VerificationForm>(key: K, value: VerificationForm[K]) => void
   addFiles: (fileList: FileList | null) => void
@@ -49,19 +45,16 @@ function VerificationPage({
   const [isAnalysing, setIsAnalysing] = useState(false)
   const heroCopyByStep = {
     1: {
-      title: 'Define the verification.',
-      description:
-        'Add the business details and the claim to be checked.',
+      title: 'Product Details',
+      description: '',
     },
     2: {
-      title: 'Attach the proof.',
-      description:
-        'Upload the files that support the claim from step 1.',
+      title: 'Proof Documents',
+      description: '',
     },
     3: {
-      title: 'Review and submit.',
-      description:
-        'Check the details and submit the verification.',
+      title: 'Review',
+      description: '',
     },
   } as const
   const activeHeroCopy = heroCopyByStep[step as 1 | 2 | 3]
@@ -75,13 +68,7 @@ function VerificationPage({
       <div className="absolute inset-0 bg-gradient-to-t from-[#10271d]/85 via-[#163829]/30 to-transparent" />
       <div className="relative flex h-full flex-col items-center justify-end p-6 text-white sm:p-8">
         <div className="max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
-          <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#d6ebdf]">
-            Verification workflow
-          </p>
-          <h2 className="mt-3 text-2xl font-bold leading-tight">{activeHeroCopy.title}</h2>
-          <p className="mt-3 text-sm leading-6 text-[#d6ebdf]">
-            {activeHeroCopy.description}
-          </p>
+          <h2 className="text-2xl font-bold leading-tight">{activeHeroCopy.title}</h2>
         </div>
       </div>
     </aside>
@@ -100,7 +87,7 @@ function VerificationPage({
     const primaryFile = form.files[0]?.name ?? 'proof-document.pdf'
 
     return {
-      supplierName: `${form.storeName} supplier`,
+      supplierName: `${form.businessName} supplier`,
       documentDate: new Intl.DateTimeFormat('en-US', {
         month: 'short',
         day: 'numeric',
@@ -109,7 +96,7 @@ function VerificationPage({
       materialType: form.sustainabilityCategory || 'Organic Materials',
       fileName: primaryFile,
     }
-  }, [form.files, form.storeName, form.sustainabilityCategory])
+  }, [form.businessName, form.files, form.sustainabilityCategory])
 
   function goToStep(nextStep: number) {
     setStep(Math.min(3, Math.max(1, nextStep)))
@@ -119,9 +106,9 @@ function VerificationPage({
     event.preventDefault()
 
     const canContinueFromStepOne =
-      form.storeName.trim() !== '' &&
-      form.country.trim() !== '' &&
-      form.platform.trim() !== '' &&
+      form.productName.trim() !== '' &&
+      form.productSku.trim() !== '' &&
+      form.productUrl.trim() !== '' &&
       form.sustainabilityCategory.trim() !== ''
     const canContinueFromStepTwo = form.files.length > 0
     const canSubmit = form.consent
@@ -142,11 +129,7 @@ function VerificationPage({
     <section className="flex min-h-screen w-full items-start justify-center bg-[#f8f9fa] px-4 py-8 sm:px-6 md:px-10">
       <div className="w-full max-w-[1040px]">
         <FlowProgress step={step + 1} totalSteps={4} />
-        <div className="mb-8">
-          <div>
-            <p className="text-sm font-medium text-[#52796f]">Merchant Verification &amp; Proof Review</p>
-          </div>
-        </div>
+        <div className="mb-8" />
 
         <div className="grid overflow-hidden rounded-xl border border-[#d8e2dc] bg-white shadow-sm lg:grid-cols-[1.05fr_0.95fr]">
           <form onSubmit={handleWizardSubmit}>
@@ -154,46 +137,35 @@ function VerificationPage({
             <section>
               <div className="space-y-6 p-6 sm:p-8">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
-                    Verification Flow
-                  </p>
                   <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
                     {activeHeroCopy.title}
                   </h1>
-                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
-                    {activeHeroCopy.description}
-                  </p>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-[#1b4332]">Set verification context</h2>
-                  <p className="mt-1 text-sm text-[#52796f]">
-                    Define who is being verified and what sustainability claim the next proof upload must support.
-                  </p>
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2">
-                  <FormField label="Business Name">
+                  <FormField label="Product Name">
                     <input
-                      value={form.storeName}
-                      onChange={(event) => onChange('storeName', event.target.value)}
+                      value={form.productName}
+                      onChange={(event) => onChange('productName', event.target.value)}
                       className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
                     />
                   </FormField>
 
-                  <CustomSelect
-                    label="Country"
-                    value={form.country}
-                    options={countries}
-                    onChange={(value) => onChange('country', value)}
-                  />
+                  <FormField label="Product SKU">
+                    <input
+                      value={form.productSku}
+                      onChange={(event) => onChange('productSku', event.target.value)}
+                      className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
+                    />
+                  </FormField>
 
-                  <CustomSelect
-                    label="E-commerce Platform"
-                    value={form.platform}
-                    options={platforms}
-                    onChange={(value) => onChange('platform', value)}
-                  />
+                  <FormField label="Product URL">
+                    <input
+                      value={form.productUrl}
+                      onChange={(event) => onChange('productUrl', event.target.value)}
+                      className="w-full rounded-lg border border-[#d8e2dc] bg-white px-4 py-3 text-sm text-[#1b4332] outline-none transition-colors focus:border-[#1b4332]"
+                    />
+                  </FormField>
 
                   <CustomSelect
                     label="Sustainability Category"
@@ -218,16 +190,16 @@ function VerificationPage({
                     aria-label="Continue"
                     disabled={
                       !(
-                        form.storeName.trim() !== '' &&
-                        form.country.trim() !== '' &&
-                        form.platform.trim() !== '' &&
+                        form.productName.trim() !== '' &&
+                        form.productSku.trim() !== '' &&
+                        form.productUrl.trim() !== '' &&
                         form.sustainabilityCategory.trim() !== ''
                       )
                     }
                     className={`flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors ${
-                      form.storeName.trim() !== '' &&
-                      form.country.trim() !== '' &&
-                      form.platform.trim() !== '' &&
+                      form.productName.trim() !== '' &&
+                      form.productSku.trim() !== '' &&
+                      form.productUrl.trim() !== '' &&
                       form.sustainabilityCategory.trim() !== ''
                         ? 'bg-[#1b4332] hover:bg-[#163829]'
                         : 'cursor-not-allowed bg-[#b7c4b8]'
@@ -244,22 +216,9 @@ function VerificationPage({
             <section>
               <div className="space-y-6 p-6 sm:p-8">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
-                    Verification Flow
-                  </p>
                   <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
                     {activeHeroCopy.title}
                   </h1>
-                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
-                    {activeHeroCopy.description}
-                  </p>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-[#1b4332]">Upload supporting proof</h2>
-                  <p className="mt-1 text-sm text-[#52796f]">
-                    Add invoices, certifications, or shipping manifests that support the verification context you set in step 1.
-                  </p>
                 </div>
 
                 <div>
@@ -417,31 +376,30 @@ function VerificationPage({
             <section>
               <div className="space-y-6 p-6 sm:p-8">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#52796f]">
-                    Verification Flow
-                  </p>
                   <h1 className="mt-3 text-2xl font-bold text-[#1b4332] sm:text-3xl">
                     {activeHeroCopy.title}
                   </h1>
-                  <p className="mt-3 text-sm leading-7 text-[#52796f]">
-                    {activeHeroCopy.description}
-                  </p>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold text-[#1b4332]">Review & submit</h2>
-                  <p className="mt-1 text-sm text-[#52796f]">
-                    Confirm the details below before sending the proof for verification.
-                  </p>
                 </div>
 
                 <div className="grid gap-4">
                   <article className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
-                    <h3 className="text-sm font-semibold text-[#1b4332]">Business summary</h3>
+                    <h3 className="text-sm font-semibold text-[#1b4332]">Personal Details</h3>
                     <div className="mt-4 space-y-3 text-sm text-[#315948]">
                       <div className="flex justify-between gap-4">
-                        <span>Business name</span>
-                        <span className="font-semibold text-[#1b4332]">{form.storeName}</span>
+                        <span>Business Name</span>
+                        <span className="font-semibold text-[#1b4332]">{form.businessName}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Contact Name</span>
+                        <span className="font-semibold text-[#1b4332]">{form.contactName}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Contact Email</span>
+                        <span className="font-semibold text-[#1b4332]">{form.contactEmail}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Contact Phone</span>
+                        <span className="font-semibold text-[#1b4332]">{form.contactPhone}</span>
                       </div>
                       <div className="flex justify-between gap-4">
                         <span>Country</span>
@@ -452,7 +410,29 @@ function VerificationPage({
                         <span className="font-semibold text-[#1b4332]">{form.platform}</span>
                       </div>
                       <div className="flex justify-between gap-4">
-                        <span>Sustainability category</span>
+                        <span>Website</span>
+                        <span className="font-semibold text-[#1b4332]">{form.website}</span>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article className="rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-5">
+                    <h3 className="text-sm font-semibold text-[#1b4332]">Product Details</h3>
+                    <div className="mt-4 space-y-3 text-sm text-[#315948]">
+                      <div className="flex justify-between gap-4">
+                        <span>Product Name</span>
+                        <span className="font-semibold text-[#1b4332]">{form.productName}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Product SKU</span>
+                        <span className="font-semibold text-[#1b4332]">{form.productSku}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Product URL</span>
+                        <span className="font-semibold text-[#1b4332]">{form.productUrl}</span>
+                      </div>
+                      <div className="flex justify-between gap-4">
+                        <span>Sustainability Category</span>
                         <span className="font-semibold text-[#1b4332]">
                           {form.sustainabilityCategory || 'Not selected'}
                         </span>
@@ -496,9 +476,7 @@ function VerificationPage({
                   <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-[#b7c4b8] bg-white text-transparent transition-all peer-checked:border-[#1b4332] peer-checked:bg-[#1b4332] peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-[#cfe0d4] peer-focus-visible:ring-offset-2">
                     <IconCheckMini />
                   </span>
-                  <span className="leading-6">
-                    I confirm this information is accurate and ready for verification review.
-                  </span>
+                  <span className="leading-6">I confirm the information is accurate.</span>
                 </label>
 
                 <div className="flex items-center justify-between gap-3">

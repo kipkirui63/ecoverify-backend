@@ -148,7 +148,7 @@ function buildReport(form: VerificationForm): VerificationReport {
     {
       id: '1',
       title: 'Merchant submission received',
-      detail: `${form.storeName} in ${form.country} uploaded ${form.files.length || 1} evidence item(s) for ${form.productName}.`,
+      detail: `${form.businessName} in ${form.country} uploaded ${form.files.length || 1} evidence item(s) for ${form.productName}.`,
       when: formatDateTime(now),
     },
     {
@@ -357,6 +357,7 @@ function App() {
           onBack={() => navigate('login')}
           onSubmit={submitOnboarding}
           onChange={updateField}
+          countries={countries}
           platforms={platforms}
         />
       )}
@@ -367,8 +368,6 @@ function App() {
           <VerificationPage
             form={form}
             categories={categories}
-            countries={countries}
-            platforms={platforms}
             onBack={() => navigate('dashboard')}
             onChange={updateField}
             addFiles={addFiles}
@@ -385,8 +384,6 @@ function App() {
         <VerificationPage
           form={form}
           categories={categories}
-          countries={countries}
-          platforms={platforms}
           onBack={() => navigate('onboarding')}
           onChange={updateField}
           addFiles={addFiles}
@@ -410,7 +407,7 @@ function App() {
             copyEmbedCode={copyEmbedCode}
             displayMode="badge-only"
             hasBadge={true}
-            merchantName={form.storeName}
+            merchantName={form.businessName}
             report={report}
             onGoDashboard={() => navigate('dashboard')}
           />
@@ -421,7 +418,7 @@ function App() {
           copied={copied}
           copyEmbedCode={copyEmbedCode}
           hasBadge={true}
-          merchantName={form.storeName}
+          merchantName={form.businessName}
           report={report}
           onGoDashboard={() => navigate('dashboard')}
         />
@@ -435,7 +432,7 @@ function App() {
       {route === 'dashboard' && (
         <DashboardShell route="dashboard" onNavigate={navigate}>
           <DashboardPage
-            merchantName={form.storeName}
+            merchantName={form.businessName}
             report={report}
             totalClaimsSubmitted={productRows.length}
             queue={productRows}
