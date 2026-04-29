@@ -171,6 +171,15 @@ export function IconX() {
   )
 }
 
+export function IconEdit({ size = 16 }: { size?: number }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" />
+      <path d="m16.5 3.5 4 4L7 21l-4 1 1-4L16.5 3.5z" />
+    </svg>
+  )
+}
+
 export function IconAlertTriangle({ size = 20 }: { size?: number }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

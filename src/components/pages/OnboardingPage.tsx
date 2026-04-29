@@ -97,6 +97,12 @@ function OnboardingPage({
               </FormField>
             </div>
 
+            <div className="mt-6 rounded-xl border border-[#d8e2dc] bg-[#f8faf8] p-4">
+              <p className="text-sm font-medium text-[#1b4332]">
+                Your contact details stay private and are only used for verification review.
+              </p>
+            </div>
+
             <div className="mt-8 flex items-center justify-between">
               <button
                 type="button"
@@ -129,8 +135,39 @@ function OnboardingPage({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#10271d]/85 via-[#163829]/30 to-transparent" />
             <div className="relative flex h-full flex-col items-center justify-end p-6 text-white sm:p-8">
-              <div className="max-w-sm rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
-                <h2 className="text-2xl font-bold leading-tight">Personal Details</h2>
+              <div className="max-w-sm space-y-4 rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.22em] text-[#d6ebdf]">
+                    Step 1
+                  </p>
+                  <h2 className="mt-2 text-2xl font-bold leading-tight">Personal Details</h2>
+                  <p className="mt-3 text-sm leading-6 text-[#d6ebdf]">
+                    Tell us who you are and how your store can be identified.
+                  </p>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <article className="rounded-xl border border-white/10 bg-black/10 p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#d6ebdf]">You add</p>
+                    <p className="mt-2 text-sm font-medium text-white">Business name, contact details, platform, and website.</p>
+                  </article>
+                  <article className="rounded-xl border border-white/10 bg-black/10 p-3">
+                    <p className="text-[11px] uppercase tracking-[0.18em] text-[#d6ebdf]">Why</p>
+                    <p className="mt-2 text-sm font-medium text-white">This helps us connect your store to the products you want to verify.</p>
+                  </article>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-[#ecf8f0]">
+                    Store name
+                  </span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-[#ecf8f0]">
+                    Contact details
+                  </span>
+                  <span className="rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium text-[#ecf8f0]">
+                    Store website
+                  </span>
+                </div>
               </div>
             </div>
           </aside>

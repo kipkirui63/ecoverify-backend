@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import DashboardShell from './components/ui/DashboardShell'
 import ConfirmationPage from './components/pages/ConfirmationPage'
 import DashboardPage from './components/pages/DashboardPage'
+import FailedVerificationPage from './components/pages/FailedVerificationPage'
 import HistoryPage from './components/pages/HistoryPage'
 import HomePage from './components/pages/HomePage'
 import LoginPage from './components/pages/LoginPage'
@@ -37,6 +38,7 @@ function getRouteFromHash(): Route {
     case 'onboarding':
     case 'verification':
     case 'confirmation':
+    case 'failure':
     case 'badge':
     case 'dashboard':
     case 'products':
@@ -106,7 +108,7 @@ function inferStatus(files: UploadedFile[], category: string): VerificationStatu
   )
 
   if (suspicious) return 'Flagged'
-  if (files.length < 2 || !category) return 'In Review'
+  if (files.length === 0 || !category) return 'In Review'
   return 'Verified'
 }
 
@@ -134,11 +136,7 @@ function buildReport(form: VerificationForm): VerificationReport {
           'One or more uploaded files appear edited or incomplete.',
           'Supplier reference mismatch requires manual human review before publication.',
         ]
-      : status === 'In Review'
-        ? [
-            'Additional supporting evidence is required to complete automated verification.',
-          ]
-        : []
+      : []
 
   const verifiedAt = formatPrettyDate(now)
   const nextRefresh = new Date(now)
@@ -179,9 +177,7 @@ function buildReport(form: VerificationForm): VerificationReport {
           ? '100% Organic.'
           : 'Eco-Verified.'
         : status === 'In Review'
-          ? badgeTier === 'Silver'
-            ? 'Evidence received. The badge is being prepared for review.'
-            : 'Proof is incomplete. Upload more evidence to raise the badge tier.'
+          ? 'Evidence received. Your submission is being reviewed before a badge can be issued.'
           : 'Verification blocked pending manual anomaly review.',
     freshnessLabel:
       status === 'Verified'
@@ -230,9 +226,12 @@ function App() {
   useEffect(() => {
     if (route !== 'badge') return
 
-    const timeout = window.setTimeout(() => navigate('confirmation'), 1800)
+    const timeout = window.setTimeout(
+      () => navigate(report.status === 'Flagged' ? 'failure' : 'confirmation'),
+      1800,
+    )
     return () => window.clearTimeout(timeout)
-  }, [route])
+  }, [report.status, route])
 
   function navigate(nextRoute: Route) {
     if (nextRoute === 'dashboard') {
@@ -326,7 +325,7 @@ function App() {
         detail:
           nextReport.status === 'Verified'
             ? nextReport.badgeMessage
-            : nextReport.anomalies[0] ?? 'Merchant evidence requires additional review.',
+            : nextReport.anomalies[0] ?? nextReport.badgeMessage,
         when: 'Just now',
       },
       ...current,
@@ -420,6 +419,26 @@ function App() {
           hasBadge={true}
           merchantName={form.businessName}
           report={report}
+          onGoDashboard={() => navigate('dashboard')}
+        />
+        )
+      )}
+
+      {route === 'failure' && (
+        dashboardUnlocked ? (
+        <DashboardShell route="confirmation" onNavigate={navigate}>
+          <FailedVerificationPage
+            merchantName={form.businessName}
+            report={report}
+            onRetry={() => navigate('verification')}
+            onGoDashboard={() => navigate('dashboard')}
+          />
+        </DashboardShell>
+        ) : (
+        <FailedVerificationPage
+          merchantName={form.businessName}
+          report={report}
+          onRetry={() => navigate('verification')}
           onGoDashboard={() => navigate('dashboard')}
         />
         )

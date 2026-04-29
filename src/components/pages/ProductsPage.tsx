@@ -25,7 +25,7 @@ function ProductsPage({
           <div className="flex min-h-[320px] flex-col items-center justify-center text-center">
             <h2 className="text-2xl font-bold text-[#1b4332]">No products yet</h2>
             <p className="mt-3 max-w-md text-sm leading-6 text-[#52796f]">
-              Your verified products will appear here after your first submission.
+              Your submitted products will appear here after your first verification.
             </p>
             <button
               type="button"
@@ -33,7 +33,7 @@ function ProductsPage({
               className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#1b4332] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#163829]"
             >
               <IconPlus size={16} />
-              <span>Start Verification</span>
+              <span>Add First Product</span>
             </button>
           </div>
         ) : (

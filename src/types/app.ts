@@ -4,6 +4,7 @@ export type Route =
   | 'onboarding'
   | 'verification'
   | 'confirmation'
+  | 'failure'
   | 'badge'
   | 'dashboard'
   | 'products'

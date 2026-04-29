@@ -39,6 +39,19 @@ function ConfirmationPage({
         ? 'border-[#9ca3af] bg-[#f8fafc] text-[#475569]'
         : 'border-[#c97b30] bg-[#fff4e8] text-[#9c4f19]'
   const isBadgeOnly = displayMode === 'badge-only'
+  const confirmationTitle =
+    report.status === 'Verified'
+      ? 'Verification approved'
+      : report.status === 'In Review'
+        ? 'Verification received'
+        : 'Verification needs attention'
+  const confirmationMessage =
+    report.status === 'Verified'
+      ? `Your proof has been received for ${merchantName}. Your sustainability claims have been audited and approved.`
+      : report.status === 'In Review'
+        ? `Your proof has been received for ${merchantName}. Your ${report.badgeTier} badge is live while final review continues.`
+        : `Your proof has been received for ${merchantName}, but your submission needs manual review before the badge can go live.`
+  const dateLabel = report.status === 'Verified' ? 'Verified' : report.status === 'In Review' ? 'Received' : 'Submitted'
 
   if (!hasBadge) {
     return (
@@ -100,16 +113,37 @@ function ConfirmationPage({
       <div className="w-full max-w-3xl">
         <article className="rounded-2xl border border-[#d8e2dc] bg-white p-6 shadow-sm sm:p-8">
           {!isBadgeOnly && (
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1b4332] text-white">
-                <IconCheckCircle size={32} />
+            <div className="rounded-2xl bg-[radial-gradient(circle_at_top,#edf6f0,white_55%)] p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#1b4332] text-white shadow-sm">
+                  <IconCheckCircle size={32} />
+                </div>
+                <h1 className="mt-5 text-2xl font-bold text-[#1b4332] sm:text-3xl">
+                  {confirmationTitle}
+                </h1>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-[#52796f] sm:text-base">
+                  {confirmationMessage}
+                </p>
               </div>
-              <h1 className="mt-5 text-2xl font-bold text-[#1b4332] sm:text-3xl">
-                 Verification Submitted Successfully!
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-[#52796f] sm:text-base">
-                Your proof has been received for {merchantName}. Your sustainability claims have been audited and approved.
-              </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-4">
+                <article className="rounded-xl border border-[#d8e2dc] bg-white p-4 text-center shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#52796f]">Status</p>
+                  <p className="mt-2 text-sm font-semibold text-[#1b4332]">{report.status}</p>
+                </article>
+                <article className="rounded-xl border border-[#d8e2dc] bg-white p-4 text-center shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#52796f]">{dateLabel}</p>
+                  <p className="mt-2 text-sm font-semibold text-[#1b4332]">{report.verifiedAt}</p>
+                </article>
+                <article className="rounded-xl border border-[#d8e2dc] bg-white p-4 text-center shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#52796f]">Refresh due</p>
+                  <p className="mt-2 text-sm font-semibold text-[#1b4332]">{report.nextRefreshDue}</p>
+                </article>
+                <article className="rounded-xl border border-[#d8e2dc] bg-white p-4 text-center shadow-sm">
+                  <p className="text-xs uppercase tracking-[0.18em] text-[#52796f]">Evidence</p>
+                  <p className="mt-2 text-sm font-semibold text-[#1b4332]">{report.evidence.length} items</p>
+                </article>
+              </div>
             </div>
           )}
 
