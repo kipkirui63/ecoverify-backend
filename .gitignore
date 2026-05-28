@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 materials
+.env
+.env.*
+!.env.example
+venv
+backend/venv
+__pycache__
+*.pyc
 
 
 # Editor directories and files
