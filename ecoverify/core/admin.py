@@ -26,6 +26,6 @@ class AuthTokenAdmin(admin.ModelAdmin):
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "phone_number", "created_at")
-    search_fields = ("user__username", "user__email", "phone_number")
+    list_display = ("user", "business_name", "contact_email", "phone_number", "created_at")
+    search_fields = ("user__username", "user__email", "business_name", "contact_email", "phone_number")
     readonly_fields = ("created_at", "updated_at")

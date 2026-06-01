@@ -35,9 +35,8 @@ def parse_json_body(request):
 
 
 def user_payload(user):
-    phone_number = ""
-    if hasattr(user, "profile"):
-        phone_number = user.profile.phone_number
+    profile, _ = UserProfile.objects.get_or_create(user=user, defaults={"phone_number": ""})
+    phone_number = profile.phone_number
 
     return {"id": str(user.id), "email": user.email or user.username, "phoneNumber": phone_number}
 
@@ -99,6 +98,40 @@ def validate_submission(payload):
         raise ApiError(400, f"Report is missing required field(s): {', '.join(missing)}.")
 
     return form, report
+
+
+def serialize_profile(profile):
+    return {
+        "businessName": profile.business_name,
+        "country": profile.country,
+        "platform": profile.platform,
+        "website": profile.website,
+        "contactName": profile.contact_name,
+        "contactEmail": profile.contact_email,
+        "contactPhone": profile.contact_phone or profile.phone_number,
+    }
+
+
+def update_profile_from_payload(profile, payload):
+    fields = {
+        "businessName": "business_name",
+        "country": "country",
+        "platform": "platform",
+        "website": "website",
+        "contactName": "contact_name",
+        "contactEmail": "contact_email",
+        "contactPhone": "contact_phone",
+    }
+
+    for payload_key, model_field in fields.items():
+        if payload_key in payload:
+            setattr(profile, model_field, str(payload.get(payload_key, "")).strip())
+
+    if profile.contact_phone:
+        profile.phone_number = profile.contact_phone
+
+    profile.save(update_fields=[*fields.values(), "phone_number", "updated_at"])
+    return profile
 
 
 def serialize_submission(submission):
@@ -184,6 +217,26 @@ def current_user_view(request):
     try:
         user = get_authenticated_user(request)
         return JsonResponse({"user": user_payload(user)})
+    except ApiError as error:
+        return json_error(error.status, error.message)
+
+
+@csrf_exempt
+@require_http_methods(["GET", "POST", "OPTIONS"])
+def profile_view(request):
+    if request.method == "OPTIONS":
+        return JsonResponse({}, status=204)
+
+    try:
+        user = get_authenticated_user(request)
+        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={"phone_number": ""})
+
+        if request.method == "GET":
+            return JsonResponse({"profile": serialize_profile(profile)})
+
+        payload = parse_json_body(request)
+        profile = update_profile_from_payload(profile, payload)
+        return JsonResponse({"profile": serialize_profile(profile)})
     except ApiError as error:
         return json_error(error.status, error.message)
 

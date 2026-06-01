@@ -20,6 +20,13 @@ class AuthToken(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     phone_number = models.CharField(max_length=40)
+    business_name = models.CharField(max_length=255, blank=True)
+    country = models.CharField(max_length=120, blank=True)
+    platform = models.CharField(max_length=120, blank=True)
+    website = models.URLField(blank=True)
+    contact_name = models.CharField(max_length=255, blank=True)
+    contact_email = models.EmailField(blank=True)
+    contact_phone = models.CharField(max_length=40, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

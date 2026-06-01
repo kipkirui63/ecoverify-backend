@@ -20,6 +20,26 @@ class ApiWorkflowTests(TestCase):
         self.assertEqual(register_payload["user"]["phoneNumber"], "+254700000000")
         self.assertEqual(UserProfile.objects.count(), 1)
 
+        profile_payload = {
+            "businessName": "Eco Shop",
+            "country": "Kenya",
+            "platform": "Shopify",
+            "website": "https://ecoshop.example",
+            "contactName": "Amina Owner",
+            "contactEmail": "owner@example.com",
+            "contactPhone": "+254711111111",
+        }
+        profile_response = self.client.post(
+            "/api/profile",
+            profile_payload,
+            content_type="application/json",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        self.assertEqual(profile_response.status_code, 200)
+        self.assertEqual(profile_response.json()["profile"]["businessName"], "Eco Shop")
+        self.assertEqual(profile_response.json()["profile"]["contactPhone"], "+254711111111")
+
         payload = {
             "form": {
                 "businessName": "Eco Shop",
