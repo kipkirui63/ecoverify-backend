@@ -53,8 +53,8 @@ DJANGO_DEBUG=False
 DJANGO_SECRET_KEY=<generated-secret>
 DATABASE_URL=<your-supabase-transaction-pooler-url>
 DB_SSLMODE=require
-CORS_ALLOWED_ORIGINS=<your-frontend-url>
-CSRF_TRUSTED_ORIGINS=<your-backend-render-url>,<your-frontend-url>
+CORS_ALLOWED_ORIGINS=https://eco-verify.vercel.app
+CSRF_TRUSTED_ORIGINS=https://ecoverify-backend.onrender.com,https://eco-verify.vercel.app
 SECURE_SSL_REDIRECT=True
 SECURE_HSTS_SECONDS=31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS=True
@@ -64,7 +64,7 @@ SECURE_HSTS_PRELOAD=True
 After the service has a Render URL, add that URL to the frontend as:
 
 ```env
-VITE_API_BASE_URL=https://your-backend-name.onrender.com
+VITE_API_BASE_URL=https://ecoverify-backend.onrender.com
 ```
 
 ## API
