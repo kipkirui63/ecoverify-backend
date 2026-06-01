@@ -6,4 +6,5 @@ __pycache__
 *.pyc
 db.sqlite3
 ecoverify/db.sqlite3
+ecoverify/staticfiles
 .DS_Store

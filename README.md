@@ -34,12 +34,47 @@ python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
 
+## Render deployment
+
+This repository is ready to deploy as a Render Python web service.
+
+Use the existing `render.yaml` as a Blueprint, or create a manual web service with:
+
+```bash
+Build Command: ./build.sh
+Start Command: python -m gunicorn --chdir ecoverify ecoverify.wsgi:application --bind 0.0.0.0:$PORT
+Health Check Path: /health
+```
+
+Set these environment variables in Render:
+
+```env
+DJANGO_DEBUG=False
+DJANGO_SECRET_KEY=<generated-secret>
+DATABASE_URL=<your-supabase-transaction-pooler-url>
+DB_SSLMODE=require
+CORS_ALLOWED_ORIGINS=<your-frontend-url>
+CSRF_TRUSTED_ORIGINS=<your-backend-render-url>,<your-frontend-url>
+SECURE_SSL_REDIRECT=True
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+```
+
+After the service has a Render URL, add that URL to the frontend as:
+
+```env
+VITE_API_BASE_URL=https://your-backend-name.onrender.com
+```
+
 ## API
 
 - `GET /health`
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `GET /api/auth/me`
+- `GET /api/profile`
+- `POST /api/profile`
 - `GET /api/submissions`
 - `POST /api/submissions`
 
